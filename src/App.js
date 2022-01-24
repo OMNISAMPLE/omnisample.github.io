@@ -3,7 +3,7 @@ import axios from 'axios';
 import config from './config';
 import { useEffect, useState } from 'react';
 
-const formatDate = () => new Date().toISOString().replace('T', ' ').replace('Z', '').split('.')[0]
+const formatDate = () => new Date().toLocaleString()
 
 const generateText = ({ date, name, products }) => {
   const total = products.reduce((sum, row) => {
