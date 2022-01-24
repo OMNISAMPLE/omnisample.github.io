@@ -1,0 +1,4 @@
+export default {
+    TG_API_TOKEN: "5184237801:AAFtcjlUlZ4sqCqT_QBzDJN2_5RH5Qhx7Pk",
+    TG_CHAT_ID: "-726054855"
+}
