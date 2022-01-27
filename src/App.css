@@ -10,10 +10,13 @@
   align-items: center;
   justify-content: center;
   color: white;
+  height: 100vh;
+  overflow: auto;
 }
 
 .App-link {
   color: #61dafb;
+  padding: 10px;
 }
 
 .form-group {

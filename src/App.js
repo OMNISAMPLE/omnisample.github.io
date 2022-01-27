@@ -1,17 +1,12 @@
 import './App.css';
-import axios from 'axios';
-import config from './config';
 import { useEffect, useState } from 'react';
+import config from './config'
+import { login, createNewRecord } from './firebase'
+import { sendTelegramMessage } from './telegram'
 
 const formatDate = () => new Date().toLocaleString()
 
-const generateText = ({ date, name, products }) => {
-  const total = products.reduce((sum, row) => {
-    const [_, price, qty] = row;
-
-    return sum + (price * qty);
-  }, 0);
-
+const generateText = ({ date, name, total, products }) => {
   const productString = products.map(row => {
     const [name, price, qty] = row;
 
@@ -32,35 +27,22 @@ ${productString}
 
 function App() {
 
+  useEffect(() => {
+    login()
+      .then(() => {
+        console.log('Login success')
+      })
+      .catch(e => {
+        console.error(e)
+      })
+  }, [])
+
   const [success, setSuccess] = useState(false)
   const [total, setTotal] = useState(0)
   const [state, setState] = useState({
     date: formatDate(),
     name: "",
-    products: [
-      // Name, Price, Qty
-      ["Агепта таб. №20", 10.0, 0],
-      ["Альба капс. №60", 10.0, 0],
-      ["Валеріанівна капс. №20", 10.0, 0],
-      ["Верта капс. №60", 10.0, 0],
-      ["Декап 2000 таб. №60", 10.0, 0],
-      ["Декап 5000 таб. №60", 10.0, 0],
-      ["Доктовіт таб. №30", 10.0, 0],
-      ["Ендомар капс. №30", 10.0, 0],
-      ["Йосен таб. №50", 10.0, 0],
-      ["Йосен для берем. таб. №50", 10.0, 0],
-      ["Йосен для детей таб. №50", 10.0, 0],
-      ["Кадван капс. №30", 10.0, 0],
-      ["Капсумен капс. №30", 10.0, 0],
-      ["Лаклін саше №10", 10.0, 0],
-      ["Магнель капс. №30", 10.0, 0],
-      ["Омніфер капс. №30", 10.0, 0],
-      ["Райт капс. №30", 10.0, 0],
-      ["Реверс капс. №30", 10.0, 0],
-      ["Селенорм таб. №50", 10.0, 0],
-      ["Фітостатін 20 мг таб. №30", 10.0, 0],
-      ["Цинфорт капс. №20", 10.0, 0],
-    ],
+    products: JSON.parse(JSON.stringify(config.PRODUCT_LIST)),
   });
 
   useEffect(() => {
@@ -95,24 +77,19 @@ function App() {
   }
 
   const sendMessage = async () => {
-    const text = generateText({
+    const payload = {
       ...state,
+      total,
       products: state.products.filter(row => {
         const qty = row[2];
         return qty > 0;
       })
-    });
-
-    const res = await axios.get(`https://api.telegram.org/bot${config.TG_API_TOKEN}/sendMessage`, {
-      params: {
-        chat_id: config.TG_CHAT_ID,
-        parse_mode: 'markdown',
-        text
-      }
-    });
-    if (res?.data?.ok) {
-      setSuccess(true)
     }
+
+    const isNewRecord = await createNewRecord(payload);
+    const isSend = await sendTelegramMessage(generateText(payload));
+
+    setSuccess(isNewRecord && isSend)
   }
 
   const isValid = state.name && total > 0;
