@@ -20,9 +20,12 @@ function Export() {
     const records = await exportRecords();
 
     const productNames = config.PRODUCT_LIST.map(row => row[0])
+    const productPrices = config.PRODUCT_LIST.map(row => row[1].toFixed(2))
 
     const header = ['Дата', 'Прізвище', ...productNames, "Всього"];
-    const rows = [];
+    const rows = [
+      ['', '', ...productPrices, ''],
+    ];
     records.forEach(record => {
       const row = [record.date, record.name];
 

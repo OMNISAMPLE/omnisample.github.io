@@ -10,7 +10,7 @@ const generateText = ({ date, name, total, products }) => {
   const productString = products.map(row => {
     const [name, price, qty] = row;
 
-    return `*${name}*, ${price.toFixed(2)}, Кіл. ${qty};`
+    return `*${name}*, Упк. ${qty};`
   }).join('\n')
 
   return `
@@ -98,9 +98,9 @@ function App() {
     <div className="App">
       <header className="App-header">
 
-        <div className="form-group">
+        <div>
           <label htmlFor="date">Дата замовлення:</label>
-          <input name="date" type="text" value={state.date} disabled />
+          <h3>{state.date}</h3>
         </div>
 
         <div className="form-group">
@@ -114,7 +114,7 @@ function App() {
               <tr>
                 <th align="center">Назва</th>
                 <th align="center">Ціна</th>
-                <th align="center">Кількість *</th>
+                <th align="center">Кількість, упк. *</th>
               </tr>
             </thead>
             <tbody>
