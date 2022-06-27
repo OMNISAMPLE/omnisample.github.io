@@ -1,4 +1,4 @@
-export default {
+ const config ={
   TG_API_TOKEN: ["5184237801:", "AAFtcjlUlZ4sqCqT", "_", "QBzDJN2_5RH5Qhx7Pk"].join(''),
   TG_CHAT_ID: "-726054855",
   FIREBASE_USER: "gram7gram@gmail.com",
@@ -6,7 +6,7 @@ export default {
   PRODUCT_LIST: [
     // Name, Price, Qty
     ["АГЕПТА таб. №20", 336.0, 0],
-    // ["Альба капс. №60", 155.0, 0],
+    ["АЛЬБА капс. №60", 155.0, 0],
     // ["Ацинтак таб. №10", 58.0, 0],
     // ["Белый Уголь Доброе Утро таб. б/р №6", 44.0, 0],
     // ["Валеріанівна капс. №20", 55.0, 0],
@@ -30,3 +30,5 @@ export default {
     // ["Цинфорт капс. №20", 88.0, 0],
   ]
 }
+
+export default config;
