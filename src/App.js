@@ -39,6 +39,7 @@ function App() {
 
   const [success, setSuccess] = useState(false)
   const [total, setTotal] = useState(0)
+  const [totalQty, setTotalQty] = useState(0)
   const [state, setState] = useState({
     date: formatDate(),
     name: "",
@@ -49,10 +50,17 @@ function App() {
     const value = state.products.reduce((sum, row) => {
       const [_, price, qty] = row;
 
-      return sum + (price * qty);
-    }, 0);
+      sum.total += (price * qty)
+      sum.qty += qty
 
-    setTotal(value)
+      return sum
+    }, {
+      total: 0,
+      qty: 0,
+    });
+
+    setTotal(value.total)
+    setTotalQty(value.qty)
   }, [state.products])
 
   const setName = e => {
@@ -92,7 +100,7 @@ function App() {
     setSuccess(isNewRecord && isSend)
   }
 
-  const isValid = state.name && total > 0;
+  const isValid = state.name && totalQty > 0;
 
   return (
     <div className="App">
