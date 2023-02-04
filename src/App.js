@@ -4,7 +4,22 @@ import config from './config'
 import { login, createNewRecord } from './firebase'
 import { sendTelegramMessage } from './telegram'
 
-const formatDate = () => new Date().toLocaleString()
+const formatDate = () => new Date().toLocaleString();
+
+const products = JSON.parse(JSON.stringify(config.PRODUCT_LIST));
+
+products.sort((a, b) => {
+  const [nameA] = a;
+  const [nameB] = b;
+
+  return nameA.localeCompare(nameB)
+})
+
+const defaultState = {
+  date: formatDate(),
+  name: "",
+  products,
+}
 
 const generateText = ({ date, name, total, products }) => {
   const productString = products.map(row => {
@@ -27,24 +42,24 @@ ${productString}
 
 function App() {
 
-  useEffect(() => {
-    login()
-      .then(() => {
-        console.log('Login success')
-      })
-      .catch(e => {
-        console.error(e)
-      })
-  }, [])
-
+  const [isLogin, setIsLogin] = useState(null)
   const [success, setSuccess] = useState(false)
   const [total, setTotal] = useState(0)
   const [totalQty, setTotalQty] = useState(0)
-  const [state, setState] = useState({
-    date: formatDate(),
-    name: "",
-    products: JSON.parse(JSON.stringify(config.PRODUCT_LIST)),
-  });
+  const [state, setState] = useState(defaultState);
+
+  useEffect(() => {
+    setIsLogin(null)
+    login()
+      .then(() => {
+        setIsLogin(true)
+        console.log('Login success')
+      })
+      .catch(e => {
+        setIsLogin(false)
+        console.error('Login error', e)
+      })
+  }, [])
 
   useEffect(() => {
     const value = state.products.reduce((sum, row) => {
@@ -100,7 +115,7 @@ function App() {
     setSuccess(isNewRecord && isSend)
   }
 
-  const isValid = state.name && totalQty > 0;
+  const isValid = isLogin && state.name && totalQty > 0;
 
   return (
     <div className="App">
@@ -137,8 +152,9 @@ function App() {
                 </tr>
               })}
               <tr>
-                <td align="left" colSpan={2}>Всього</td>
-                <td align="center">{total.toFixed(2)}</td>
+                <td align="left">Всього</td>
+                <td align="right">{total.toFixed(2)}</td>
+                <td />
               </tr>
             </tbody>
 
@@ -147,6 +163,10 @@ function App() {
 
         {success ? <div className="form-group">
           <p>Заявка створена успішно!</p>
+        </div> : null}
+
+        {typeof isLogin === 'boolean' && !isLogin ? <div className="form-group">
+          <p>Помилка на сервері. Будь ласка, перезавантажте сторінку</p>
         </div> : null}
 
         <button
